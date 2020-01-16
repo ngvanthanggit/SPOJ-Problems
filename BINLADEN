@@ -1,0 +1,76 @@
+#include <iostream>
+#include <fstream>
+#include <queue>
+
+#define name "BINLADEN."
+#define run(i, a, b) for (int i = a; i <= b; ++i)
+
+using namespace std;
+const int N = 2225, M = 15;
+const int inf = 2e9;
+
+struct data {
+    int i, j, c;
+    data (int i, int j, int c) : i(i), j(j), c(c) {};
+    bool operator < (const data &a) const {
+        return c > a.c;
+    }
+};
+
+int dx[] = {-1, 0, 1, 0};
+int dy[] = {0, 1, 0, -1};
+int a[N][M], b[N][M];
+int n, m;
+int d[N][M];
+
+void inp() {
+    cin >> n >> m;
+    run(i, 1, 2*n) {
+        int k = i / 2;
+        if (i & 1)
+            run(j, 1, m) cin >> a[k + 1][j];
+        else run(j, 1, m - 1) cin >> b[k][j];
+    }
+}
+void init() {
+    run(i, 0, n) run(j, 1, m)
+    d[i][j] = inf;
+    run(i, 1, m - 1) b[0][i] = 0;
+    d[0][1] = 0;
+}
+bool outside(int x, int y) {
+    return (x < 0 || x > n || !y || y > m);
+}
+void dij() {
+    priority_queue <data> q;
+    q.push({0, 1, 0});
+    while (q.size()) {
+        data x = q.top();
+        int i = x.i, j = x.j, c = x.c;
+        q.pop();
+        if (c > d[i][j]) continue;
+        if (i == n && j == m) return;
+        int u, v, va;
+        run(k, 0, 3) {
+            u = i + dx[k];
+            v = j + dy[k];
+            if (outside(u, v)) continue;
+            if (u == i) va = (v < j) ? b[i][v] : b[i][j];
+            else va = (u < i) ? a[i][j] : a[u][j];
+            if (d[u][v] > c + va) {
+                d[u][v] = c + va;
+                q.push({u, v, d[u][v]});
+            }
+        }
+    }
+}
+void out() {
+    cout << d[n][m];
+}
+int main() {
+    inp();
+    init();
+    dij();
+    out();
+    return 0;
+}
