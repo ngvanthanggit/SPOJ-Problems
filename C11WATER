@@ -1,0 +1,102 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <queue>
+
+#define name "RAIN."
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+#define int long long
+
+using namespace std;
+
+typedef long long ll;
+const int N = 1606;
+const int inf = 1e9 + 1606;
+
+int dx[] = {-1, 0, 1, 0};
+int dy[] = {0, 1, 0, -1};
+
+struct data
+{
+    int x, y, d;
+    bool operator < (const data &a) const
+    {
+        return d > a.d;
+    }
+};
+
+int n, m;
+int a[N][N];
+int d[N][N];
+
+void inp()
+{
+    cin >> n >> m;
+    fu(i, 1, n)
+        fu(j, 1, m)
+            cin >> a[i][j];
+}
+bool limit(int x, int y)
+{
+    return (x == 0 || y == 0 || x > n || y > m);
+}
+void solve()
+{
+    priority_queue <data> q;
+    fu(i, 1, n)
+        fu(j, 1, m)
+            d[i][j] = inf;
+    fu(i, 1, n)
+        d[i][1] = a[i][1], d[i][m] = a[i][m];
+    fu(i, 1, m)
+        d[1][i] = a[1][i], d[n][i] = a[n][i];
+
+    fu(i, 1, n)
+        q.push({i, 1, a[i][1]}),
+        q.push({i, m, a[i][m]});
+    fu(i, 1, m)
+        q.push({1, i, a[1][i]}),
+        q.push({n, i, a[n][i]});
+
+    while (q.size())
+    {
+        data mtp = q.top(); q.pop();
+        int i = mtp.x;
+        int j = mtp.y;
+        int dij = mtp.d;
+
+        if (d[i][j] != dij)
+            continue;
+        fu(k, 0, 3)
+        {
+            int u = i + dx[k];
+            int v = j + dy[k];
+            if (limit(u, v)) continue;
+
+            int ma = max (a[u][v], dij);
+            if (d[u][v] > ma)
+            {
+                d[u][v] = ma;
+                q.push({u, v, ma});
+            }
+        }
+    }
+    ll res = 0;
+    fu(i, 1, n)
+        fu(j, 1, m)
+            if (d[i][j] != inf)
+                res += d[i][j] - a[i][j];
+    cout << res;
+}
+main()
+{
+    ios :: sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    #ifndef ONLINE_JUDGE
+    freopen(name"INP", "r", stdin);
+
+    #endif // ONLINE_JUDGE
+    inp();
+    solve();
+    return 0;
+}
