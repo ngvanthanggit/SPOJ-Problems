@@ -1,0 +1,43 @@
+#include <iostream>
+#include <fstream>
+
+#define name "C11STR2."
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+#define fd(i, a, b) for (int i = a; i >= b; --i)
+
+using namespace std;
+const int N = 2e5 + 2;
+
+string a, b, s;
+int n, m;
+int lps[N];
+
+void inp()
+{
+    cin >> a >> b;
+    s = b + a;
+    n = a.size();
+    m = b.size();
+}
+void solve()
+{
+    int tmp = 0;
+    fu(i, 1, n + m - 1)
+    {
+        while (tmp && s[i] != s[tmp])
+            tmp = lps[tmp - 1];
+        if (s[i] != s[tmp])
+            lps[i] = 0;
+        else
+            lps[i] = ++tmp;
+    }
+    a.erase(n - lps[n + m - 1]);
+    cout << a << b;
+}
+int main()
+{
+    ios :: sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    inp();
+    solve();
+    return 0;
+}
