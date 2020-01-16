@@ -1,0 +1,30 @@
+#include <iostream>
+#include <fstream>
+
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+
+using namespace std;
+
+typedef long long ll;
+const int N = 1e6 + 7;
+const ll mod = 1e9;
+
+int n, k;
+ll f[N][2];
+
+int main()
+{
+    cin >> n >> k;
+    f[0][0] = f[0][1] = f[1][0] = f[1][1] = 1;
+    fu(i, 2, n)
+    {
+        f[i][0] = f[i][1] = (f[i - 1][0] + f[i - 1][1]) % mod;
+        if (i > k)
+        {
+            f[i][0] = (f[i][0] + mod - f[i - k - 1][1]) % mod;
+            f[i][1] = (f[i][1] + mod - f[i - k - 1][0]) % mod;
+        }
+    }
+    cout << (f[n][0] + f[n][1]) % mod;
+    return 0;
+}
