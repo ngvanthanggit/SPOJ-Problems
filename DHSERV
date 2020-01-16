@@ -1,0 +1,81 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <queue>
+
+#define name "DHSERV."
+#define f1(i, a) for (int i = 1; i <= a; ++i)
+#define pb push_back
+#define f first
+#define s second
+
+using namespace std;
+typedef long long ll;
+typedef pair <ll, int> ii;
+const int N = 501;
+const ll inf = 1e15;
+
+int n, m, k;
+vector <ii> a[N];
+int c[N][N];
+ll d[N][N];
+bool dd[N];
+
+void inp()
+{
+    cin >> n >> m >> k;
+    f1(i, n) f1(j, n)
+        d[i][j] = inf;
+    int u, v, l;
+    while (m--) {
+        cin >> u >> v >> l;
+        a[u].pb({l, v});
+        d[u][v] = l;
+    }
+}
+void DIJKSTRA(int s)
+{
+    int i;
+    ll l;
+    priority_queue <ii> q;
+    q.push({0, s});
+    while(q.size())
+    {
+        i = q.top().s;
+        l = -q.top().f;
+        q.pop();
+        if (l > d[s][i]) continue;
+        for (ii x : a[i])
+        if (d[s][x.s] >= d[s][i] + x.f) {
+            d[s][x.s] = d[s][i] + x.f;
+            if (dd[x.s]) q.push({-d[s][x.s], x.s});
+        }
+    }
+}
+void solve()
+{
+    f1(i, n) dd[i] = 0;
+    f1(i, n) d[i][i] = 0;
+    int t, x, y;
+    while (k--) {
+        cin >> t;
+        if (t == 1) {
+            cin >> x;
+            if (dd[x]) continue;
+            dd[x] = 1;
+            f1(i, n) DIJKSTRA(i);
+        }
+        else {
+            cin >> x >> y;
+            cout << (d[x][y] != inf ? d[x][y] : -1) << '\n';
+        }
+    }
+}
+int main()
+{
+    ios :: sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    inp();
+    solve();
+    return 0;
+}
