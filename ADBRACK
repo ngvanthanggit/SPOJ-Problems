@@ -1,0 +1,85 @@
+#include <bits/stdc++.h>
+
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+#define fd(i, a, b) for (int i = a; i >= b; --i)
+#define pb push_back
+
+using namespace std;
+typedef long long ll;
+const int N = 107;
+
+char s[N];
+int n, k;
+string f[N][N][2];
+char close[150];
+stack <char> st;
+
+void inp()
+{
+    cin >> n >> k;
+    cin >> s + 1;
+}
+void sum(string &a, string b)
+{
+    if (a.size() > b.size())
+        b.insert(0, a.size() - b.size(), '0');
+    else
+        a.insert(0, b.size() - a.size(), '0');
+    string res = a;
+    int carry = 0;
+    fd(i, res.size() - 1, 0)
+    {
+        int temp = a[i] + b[i] - 96 + carry;
+        res[i] = char (temp % 10 + 48);
+        carry = temp > 9;
+    }
+    if (carry) res = "1" + res;
+    a = res;
+}
+string calc(int i, int c, bool ok)
+{
+    auto &res = f[i][c][ok];
+    if (i == n) return (!c && ok ? "1" : "0");
+    if (res != "") return res;
+
+    res = "0";
+    for (char ch : {'(', '[', '{'})
+        if (c < k && (ok || ch <= s[i + 1]))
+        {
+            st.push(ch);
+            sum(res, calc(i + 1, c + 1, ok | (ch < s[i + 1])));
+            st.pop();
+        }
+    if (c)
+    {
+        char last = st.top();
+        st.pop();
+        if (ok || close[last] <= s[i + 1])
+            sum(res, calc(i + 1, c - 1, ok | (close[last] < s[i + 1])));
+        st.push(last);
+    }
+    return res;
+}
+void solve()
+{
+    close['('] = ')';
+    close['['] = ']';
+    close['{'] = '}';
+    string res = "1";
+    sum(res, calc(0, 0, 0));
+    cout << res;
+}
+int main()
+{
+    #define name "ADBRACK."
+    ios :: sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    #ifndef ONLINE_JUDGE
+    freopen(name"INP", "r", stdin);
+
+    #endif // ONLINE_JUDGE
+
+    inp();
+    solve();
+    return 0;
+}
