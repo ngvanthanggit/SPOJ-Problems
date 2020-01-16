@@ -1,0 +1,156 @@
+#include <iostream>
+#include <fstream>
+#include <deque>
+
+#define name "BLAND."
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+#define fd(i, a, b) for (int i = a; i >= b; --i)
+#define pb push_back
+#define popb pop_back
+#define popf pop_front
+
+using namespace std;
+const int N = 302;
+
+int n, m, k;
+int a[N][N], b[N][N];
+int mu[9], log[N];
+int tmin[N][N][9], tmax[N][N][9];
+int A[N], B[N];
+int TOP[N], BOT[N];
+
+void inp()
+{
+    cin >> n >> m >> k;
+    fu(i, 1, n)
+        fu(j, 1, m) cin >> a[i][j];
+}
+void LOG()
+{
+    fu(i, 2, n)
+        log[i] = log[i >> 1] + 1;
+    mu[0] = 1;
+    fu(i, 1, log[n])
+        mu[i] = mu[i - 1] << 1;
+}
+void build()
+{
+    fu(i, 1, n)
+        fu(j, 1, m)
+            tmin[i][j][0] = tmax[i][j][0] = a[i][j];
+    fu(j, 1, m)
+    {
+        fu(k, 1, log[n])
+            for (int i = 0; i + mu[k] - 1 <= n; ++i)
+            {
+                tmin[i][j][k] = min (tmin[i][j][k - 1], tmin[i + mu[k - 1]][j][k - 1]);
+                tmax[i][j][k] = max (tmax[i][j][k - 1], tmax[i + mu[k - 1]][j][k - 1]);
+            }
+    }
+}
+void get_min_max(int x, int y)
+{
+    int LOG = log[y - x + 1];
+    fu(j, 1, m)
+    {
+        A[j] = max (tmax[x][j][LOG], tmax[y - mu[LOG] + 1][j][LOG]);
+        B[j] = min (tmin[x][j][LOG], tmin[y - mu[LOG] + 1][j][LOG]);
+    }
+}
+int calc()
+{
+    deque <int> mi, ma;
+    int res = 0;
+    int minpos, maxpos;
+    minpos = maxpos = 1;
+    if (A[1] - B[1] <= k)
+    {
+        ma.pb(1); mi.pb(1);
+        res = 1;
+    }
+    else
+        ++minpos, ++maxpos;
+    fu(i, 2, m)
+    {
+        /// min
+        while (mi.size() && B[mi.back()] > B[i])
+            mi.popb();
+        mi.pb(i);
+        while (mi.size() && B[i] - B[mi.front()] > k)
+            minpos = mi.front() + 1, mi.popf();
+
+        /// max
+        while (ma.size() && A[ma.back()] < A[i])
+            ma.popb();
+        ma.pb(i);
+        while (ma.size() && A[ma.front()] - A[i] > k)
+            maxpos = ma.front() + 1, ma.popf();
+
+        while (ma.size() && mi.size() && A[ma.front()] - B[mi.front()] > k)
+            if (ma.front() > mi.front())
+                minpos = mi.front() + 1, mi.popf();
+            else
+                maxpos = ma.front() + 1, ma.popf();
+        if (!ma.size() || !mi.size())
+            continue;
+        maxpos = max (maxpos, minpos);
+        res = max (res, i - maxpos + 1);
+    }
+    return res;
+}
+void solve()
+{
+    int res = 0;
+    build();
+    fu(x, 1, n)
+        fu(y, x, n)
+        {
+            get_min_max(x, y);
+            int len = calc();
+            int acreage = len * (y - x + 1);
+            TOP[y] = max (TOP[y], acreage);
+            BOT[x] = max (BOT[x], acreage);
+        }
+    fu(i, 2, n)
+        TOP[i] = max (TOP[i], TOP[i - 1]);
+    fd(i, m - 1, 1)
+        BOT[i] = max (BOT[i], BOT[i + 1]);
+    fu(i, 1, n - 1)
+        res = max (res, TOP[i] + BOT[i + 1]);
+
+    fu(i, 1, n)
+        fu(j, 1, m)
+            b[i][j] = a[i][j];
+    fu(i, 1, n)
+        fu(j, 1, m)
+            a[j][i] = b[i][j];
+
+    swap (n, m);
+    build();
+    fu(i, 1, n)
+        TOP[i] = BOT[i] = 0;
+    fu(x, 1, n)
+        fu(y, x, n)
+        {
+            get_min_max(x, y);
+            int len = calc();
+            int acreage = len * (y - x + 1);
+            TOP[y] = max (TOP[y], acreage);
+            BOT[x] = max (BOT[x], acreage);
+        }
+    fu(i, 2, n)
+        TOP[i] = max (TOP[i], TOP[i - 1]);
+    fd(i, m - 1, 1)
+        BOT[i] = max (BOT[i], BOT[i + 1]);
+    fu(i, 1, n - 1)
+        res = max (res, TOP[i] + BOT[i + 1]);
+    cout << res;
+}
+int main()
+{
+    ios :: sync_with_stdio(0); cin.tie(0);
+    inp();
+    LOG();
+    solve();
+    return 0;
+}
