@@ -1,0 +1,86 @@
+#include <iostream>
+#include <fstream>
+#include <queue>
+#include <vector>
+
+#define name "BESTSPOT."
+#define run(i, a, b) for (int i = a; i <= b; ++i)
+#define pb push_back
+#define f first
+#define s second
+
+using namespace std;
+const int N = 501, inf = 2e9;
+typedef pair<int, int> ii;
+
+int n, k, m;
+vector <ii> a[N];
+vector <int> w;
+int d[N][N];
+int ans;
+
+void inp()
+{
+    cin >> n >> k >> m;
+    int u, v, c;
+    while (k--)
+        cin >> u, w.pb(u);
+    while (m--) {
+        cin >> u >> v >> c;
+        a[u].pb({c, v});
+        a[v].pb({c, u});
+    }
+}
+void DIJKSTRA(int s)
+{
+    priority_queue <ii> q;
+    q.push({0, s});
+    while (q.size())
+    {
+        ii mtp = q.top(); q.pop();
+        int i = mtp.s, l = -mtp.f;
+        if (l != d[s][i]) continue;
+        for (ii x : a[i])
+        if (d[s][x.s] > l + x.f) {
+            d[s][x.s] = l + x.f;
+            q.push({-d[s][x.s], x.s});
+        }
+    }
+}
+void solve()
+{
+    int mi = inf;
+    run(i, 1, n) run(j, 1, n)
+    d[i][j] = inf;
+    run(i, 1, n) d[i][i] = 0;
+    for (int x = 1; x <= n; ++x) DIJKSTRA(x);
+    for (int x = 1; x <= n; ++x)
+    {
+        int sum = 0;
+        for (int y : w)
+        {
+            if (d[x][y] == inf) {
+                sum = -1;
+                break;
+            }
+            sum += d[x][y];
+        }
+        if (sum == -1) continue;
+        if (sum < mi) {
+            mi = sum;
+            ans = x;
+        }
+    }
+}
+void out() {
+    cout << ans;
+}
+int main()
+{
+    ios :: sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    inp();
+    solve();
+    out();
+    return 0;
+}
