@@ -1,0 +1,58 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+#define name "CREC01."
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+#define pb push_back
+#define pop pop_back
+
+using namespace std;
+typedef long long ll;
+typedef vector <int> vi;
+
+int n, m;
+vi l, h;
+vector <ll> f;
+
+void inp()
+{
+    cin >> n >> m;
+    l = h = vi (m + 1, 0);
+    f = vector <ll>(m + 1, 0);
+}
+void solve()
+{
+    ll res = 0;
+    fu(i, 1, n)
+    {
+        string a;
+        cin >> a;
+        fu(j, 0, m - 1)
+            if (a[j] == '0')
+                h[j + 1] = 0;
+            else ++h[j + 1];
+        vi d(1, 0);
+        fu(j, 1, m)
+        {
+            while (d.size() - 1 && h[d.back()] >= h[j])
+                d.pop();
+            l[j] = d.back() + 1;
+            d.pb(j);
+        }
+        fu(j, 1, m)
+        {
+            int k = l[j] - 1;
+            f[j] = (ll) h[j] * (j - k) + f[k];
+            res += f[j];
+        }
+    }
+    cout << res;
+}
+int main()
+{
+    ios :: sync_with_stdio(0); cin.tie(0);
+    inp();
+    solve();
+    return 0;
+}
