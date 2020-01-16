@@ -1,0 +1,67 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <queue>
+
+#define pb push_back
+#define f first
+#define s second
+
+using namespace std;
+typedef pair <int, int> ii;
+const int N = 3e4 + 2, inf = 1e9 + 9;
+
+vector <ii> a[N];
+vector <int> res;
+int n, m;
+int d1[N], dn[N];
+long long g1[N], gn[N];
+
+void inp() {
+    int u, v, c;
+    cin >> n >> m;
+    for (int i = 1; i <= m; ++i) {
+        cin >> u >> v >> c;
+        a[u].pb({c, v});
+        a[v].pb({c, u});
+    }
+}
+void dij(int x, int *d, long long *g) {
+    priority_queue <ii, vector <ii>, greater <ii> > q;
+    for (int i = 1; i <= n; ++i) d[i] = 1e9, g[i] = 0;
+    d[x] = 0;
+    g[x] = 1;
+    q.push({0, x});
+    while (q.size()) {
+
+        int i = q.top().s;
+        int di = q.top().f;
+        q.pop();
+        if (di > d[i]) continue;
+        for (auto j : a[i])
+            if (d[j.s] > di + j.f) {
+                d[j.s] = di + j.f;
+                g[j.s] = g[i];
+                q.push({d[j.s], j.s});
+            }
+            else if (d[j.s] == di + j.f)
+                g[j.s] += g[i];
+    }
+}
+void handling() {
+    dij(1, d1, g1);
+    dij(n, dn, gn);
+    for (int i = 2; i < n; ++i)
+        if (d1[i] + dn[i] > d1[n] || g1[i] * gn[i] < g1[n])
+            res.pb(i);
+}
+void out() {
+    cout << res.size() << '\n';
+    for (int a : res) cout << a << '\n';
+}
+int main() {
+    inp();
+    handling();
+    out();
+    return 0;
+}
