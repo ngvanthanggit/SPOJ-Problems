@@ -1,0 +1,71 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+
+#define name "CHEER."
+#define run(i, a, b) for (int i = a; i <= b; ++i)
+#define pb push_back
+
+using namespace std;
+
+struct data {
+    int u, v, c;
+    bool operator < (const data &a) const {
+        return c < a.c;
+    }
+};
+
+const int N = 1e4 + 1;
+
+vector <data> a;
+int n, m;
+int d[N], par[N];
+long long ans;
+
+void inp()
+{
+    cin >> n >> m;
+    run(i, 1, n)
+        cin >> d[i];
+    int u, v, c;
+    while (m--) {
+        cin >> u >> v >> c;
+        c = c * 2 + d[u] + d[v];
+        a.pb({u, v, c});
+    }
+}
+int root(int a)
+{
+    while (a != par[a])
+        a = par[a] = par[par[a]];
+    return a;
+}
+bool joint(int x, int y)
+{
+    x = root(x); y = root(y);
+    if (x == y) return 0;
+    par[y] = x;
+    return 1;
+}
+void solve()
+{
+    run(i, 1, n) par[i] = i;
+    sort(a.begin(), a.end());
+    ans = *min_element(d + 1, d + n + 1);
+    for (auto x : a)
+        if (joint(x.u, x.v))
+            ans += x.c;
+}
+void out() {
+    cout << ans;
+}
+int main()
+{
+	ios_base :: sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
+    inp();
+    solve();
+    out();
+    return 0;
+}
