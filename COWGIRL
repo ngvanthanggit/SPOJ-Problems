@@ -1,0 +1,62 @@
+#include <bits/stdc++.h>
+
+#define name "COWGIRL."
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+#define fd(i, a, b) for (int i = a; i >= b; --i)
+#define all(x) (x).begin(), (x).end()
+#define pb push_back
+#define f first
+#define s second
+
+using namespace std;
+typedef long long ll;
+typedef pair <int, int> ii;
+const ll N = 35;
+
+int n, m;
+ll f[N][N];
+
+#define bit(s, i) (bool) (s & (1 << i))
+void solve()
+{
+    if (n < m) swap(n, m);
+    if (m == 1) { cout << (1 << n) << '\n'; return; }
+    int ma = (1 << m) - 1;
+
+    memset(f, 0, sizeof f);
+    fu(s, 0, ma) f[1][s] = 1;
+    fu(i, 2, n)
+    {
+        fu(s, 0, ma)
+            fu(t, 0, ma)
+            {
+                bool check = 0;
+                fu(i, 1, m - 1) if (bit(s, i) == bit(s, i - 1))
+                {
+                    if (bit(t, i) == bit(t, i - 1) && bit(t, i) == bit(s, i))
+                    {
+                        check = 1;
+                        break;
+                    }
+                }
+                if (!check) f[i][s] += f[i - 1][t];
+            }
+    }
+    cout << accumulate(f[n], f[n] + ma + 1, 0ll) << '\n';
+}
+int main()
+{
+    ios :: sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    #ifndef ONLINE_JUDGE
+    freopen(name"INP", "r", stdin);
+    //freopen(name"OUT", "w", stdout);
+    #endif // ONLINE_JUDGE
+
+    int t; cin >> t;
+    while (t--)
+    {
+        cin >> n >> m;
+        solve();
+    }
+    return 0;
+}
