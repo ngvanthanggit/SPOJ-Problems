@@ -1,0 +1,26 @@
+#include <iostream>
+#include <fstream>
+
+#define name "C11SUM."
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+
+using namespace std;
+const int mod = 1e9 + 7;
+
+string s;
+
+int main()
+{
+    ios :: sync_with_stdio(0); cin.tie(0);
+    cin >> s;
+    long long res = 0, x = 0;
+    int l = s.size() - 1;
+    fu(i, 0, l)
+    {
+        x = x * 10 + (i + 1) * (s[i] - '0');
+        x = x % mod;
+        res += x;
+    }
+    cout << res % mod;
+    return 0;
+}
