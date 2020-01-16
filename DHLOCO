@@ -1,0 +1,70 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+#define name "DHLOCO."
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+
+using namespace std;
+typedef long long ll;
+typedef vector <ll> vi;
+typedef vector <vi> vvi;
+
+struct matrix
+{
+    ll n, m;
+    vvi v;
+    matrix (ll n, ll m) :
+        n(n), m(m), v(n + 1, vi(m + 1, 0)) {}
+};
+
+ll n, m;
+
+matrix mul(matrix a, matrix b)
+{
+    matrix c(a.n, b.m);
+
+    fu(j, 1, c.m)
+        fu(i, 1, c.n)
+            fu(k, 1, a.m)
+            {
+                c.v[i][j] += (a.v[i][k] * b.v[k][j]) % m;
+                c.v[i][j] %= m;
+            }
+    return c;
+}
+matrix Pow(matrix a, ll k)
+{
+    matrix res(a.n, a.m);
+    res = a;
+    --k;
+    for (ll i = 0; (1ll << i) <= k; ++i)
+    {
+        if (k & (1ll << i))
+            res = mul(res, a);
+        a = mul(a, a);
+    }
+    return res;
+}
+void solve()
+{
+    matrix a(3, 3);
+    a.v = {{}, {0, 0, 1, 0}, {0, 0, 0, 1}, {0, 1, 1, 1}};
+    matrix res(3, 1);
+    res.v[1][1] = 1;
+    res.v[2][1] = 2;
+    res.v[3][1] = 4;
+    if (n < 3) { cout << res.v[n][1] % m; return; }
+    res = mul(Pow(a, n - 3), res);
+    cout << res.v[3][1];
+}
+int main()
+{
+    #ifndef ONLINE_JUDGE
+    freopen(name"INP", "r", stdin);
+
+    #endif // ONLINE_JUDGE
+    cin >> n >> m;
+    solve();
+    return 0;
+}
