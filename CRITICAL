@@ -1,0 +1,81 @@
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <vector>
+#include <iomanip>
+
+#define name "CRIT."
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+#define pb push_back
+
+using namespace std;
+typedef long long ll;
+const int N = 20003;
+
+vector <int> a[N];
+int n, m, _time, d;
+int num[N], low[N];
+int lt[N], c[N], ch[N];
+bool vis[N];
+ll res;
+
+void inp()
+{
+    cin >> n >> m;
+    int u, v;
+    while (cin >> u >> v)
+        a[u].pb(v), a[v].pb(u);
+}
+void build(int i)
+{
+    vis[i] = 1;
+    ++c[d];
+    lt[i] = d;
+    for (int j : a[i]) if (!vis[j])
+        build(j);
+}
+void dfs(int i, int p)
+{
+    vector <ll> v;
+    ch[i] = 1;
+    num[i] = low[i] = ++_time;
+    for (int j : a[i]) if (j != p)
+    {
+        if (!num[j])
+        {
+            dfs(j, i);
+            low[i] = min (low[i], low[j]);
+            ch[i] += ch[j];
+            if (low[j] >= num[i])
+                v.pb(ch[j]);
+        }
+        else
+            low[i] = min (low[i], num[j]);
+    }
+    if (v.size())
+    {
+        ll sum1 = 0;
+        ll sum2 = 0;
+        for (ll x : v) sum1 += x;
+        v.pb(c[lt[i]] - sum1 - 1);
+        sum1 = 0;
+        for (ll x : v)
+            sum1 += x, sum2 += x * x;
+        res += (sum1 * sum1 - sum2) / 2;
+    }
+}
+void solve()
+{
+    fu(i, 1, n) if (!vis[i])
+        ++d, build(i);
+    fu(i, 1, n) if (!num[i])
+        dfs(i, i);
+    cout << setprecision(2) << fixed << (double) res / n;
+}
+int main()
+{
+    ios :: sync_with_stdio(0); cin.tie(0);
+    inp();
+    solve();
+    return 0;
+}
