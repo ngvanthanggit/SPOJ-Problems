@@ -1,0 +1,29 @@
+#include <iostream>
+
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+
+using namespace std;
+typedef unsigned long long ll;
+
+int n, k;
+ll f[30][30];
+
+void init()
+{
+    fu(i, 0, 25)
+        f[i][1] = f[i][i] = 1;
+    fu(i, 1, 25)
+        fu(j, 1, 25) if (i != j)
+            f[i][j] = f[i - 1][j - 1] + f[i - 1][j] * j;
+}
+int main()
+{
+    init();
+    int t; cin >> t;
+    while (t--)
+    {
+        cin >> n >> k;
+        cout << f[n][k] << '\n';
+    }
+    return 0;
+}
