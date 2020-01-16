@@ -1,0 +1,74 @@
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <vector>
+#include <set>
+
+#define name "C11SEQ."
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+#define pb push_back
+#define all(x) x.begin(), x.end()
+
+using namespace std;
+typedef long long ll;
+const int N = 1e5 + 1;
+
+set <ll> se;
+int n;
+int a[N];
+ll l, r, res;
+
+struct Fenwick
+{
+    int n;
+    vector <int> f;
+    Fenwick(int n) : n(n), f(n + 1, 0) {}
+    ~Fenwick () { f.clear(); }
+    void up(int i) {
+        for (; i <= n; i += i & -i) ++f[i];
+    }
+    inline int sum (int i) {
+        int ans = 0;
+        for (; i > 0; i -= i & -i) ans += f[i];
+        return ans;
+    }
+};
+void inp()
+{
+    ll sum = 0;
+    se.insert(0);
+    cin >> n >> l >> r;
+    fu(i, 1, n)
+    {
+        cin >> a[i]; sum += a[i];
+        se.insert(sum);
+    }
+}
+void solve()
+{
+    vector <ll> v (se.begin(), se.end());
+    Fenwick f(v.size());
+    int _, __, ___;
+    ll sum = res = 0;
+    f.up(upper_bound(all(v), 0) - v.begin());
+    fu(i, 1, n)
+    {
+        sum += a[i];
+        _ = upper_bound(all(v), sum) - v.begin();
+        __ = upper_bound(all(v), sum - l) - v.begin();
+        ___ = upper_bound(all(v), sum - r - 1) - v.begin();
+        res += (f.sum(__) - f.sum(___));
+        f.up(_);
+    }
+}
+void out() {
+    cout << res;
+}
+int main()
+{
+    ios :: sync_with_stdio(0); cin.tie(0);
+    inp();
+    solve();
+    out();
+    return 0;
+}
