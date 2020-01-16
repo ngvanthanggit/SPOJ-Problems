@@ -1,0 +1,78 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <queue>
+
+#define name "DHFRBUS."
+#define pb push_back
+#define f first
+#define s second
+#define run(i, a, b) for (int i=a; i<=b; ++i)
+
+using namespace std;
+typedef long long ll;
+const int N = 1e5 + 2;
+const ll inf = 1e15;
+
+struct data {
+    int v, c;
+    ll l;
+    data (int v, ll l, int c) : v(v), l(l), c(c) {};
+    bool operator < (const data &a) const {
+        return l > a.l;
+    }
+};
+
+vector <pair <int, int> > a[N];
+int n, m, k, s, t;
+ll d[6][N];
+
+void inp() {
+    cin >> n >> m >> k >> s >> t;
+    int u, v, c;
+    while (m--) {
+        cin >> u >> v >> c;
+        a[u].pb({c, v});
+        a[v].pb({c, u});
+    }
+}
+void init() {
+    run(i, 0, k) run(j, 1, n)
+    d[i][j] = inf;
+    d[k][s] = 0;
+}
+void dij() {
+    priority_queue <data> q;
+    q.push({s, 0, k});
+    while (q.size()) {
+        data mtp = q.top();
+        q.pop();
+        int i = mtp.v, c = mtp.c;
+        ll l = mtp.l;
+        if (l > d[c][i]) continue;
+        for (auto x : a[i]) {
+            if (d[c][x.s] > l + x.f) {
+                d[c][x.s] = l + x.f;
+                q.push({x.s, d[c][x.s], c});
+            }
+            if (c > 0 && d[c - 1][x.s] > l) {
+                d[c - 1][x.s] = l;
+                q.push({x.s, l, c - 1});
+            }
+        }
+    }
+}
+void out() {
+    ll ans = inf;
+    run(i, 0, k) ans = min(ans, d[i][t]);
+    cout << ans;
+}
+int main() {
+	ios :: sync_with_stdio(0);
+	cin.tie(0); cout.tie(0);
+    inp();
+    init();
+    dij();
+    out();
+    return 0;
+}
