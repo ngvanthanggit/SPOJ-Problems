@@ -1,0 +1,44 @@
+#include <iostream>
+#include <fstream>
+
+#define name "C11BC2."
+#define fu(i, a, b) for (int i = a; i <= b; ++i)
+
+using namespace std;
+const int N = 10001;
+
+int n, m;
+int par[N];
+
+int root(int a)
+{
+    while (a != par[a])
+        a = par[a] = par[par[a]];
+    return a;
+}
+void inp()
+{
+    cin >> n >> m;
+    fu(i, 1, n)
+        par[i] = i;
+    int j, c;
+    fu(i, 2, n)
+    {
+        cin >> j >> c;
+        if (c == 1)
+            par[root(j)] = root(i);
+    }
+}
+void solve()
+{
+    int u, v;
+    while (cin >> u >> v)
+        cout << (root(u) != root(v) ? "YES" : "NO") << '\n';
+}
+int main()
+{
+    ios :: sync_with_stdio(0); cin.tie(0);
+    inp();
+    solve();
+    return 0;
+}
