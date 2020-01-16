@@ -1,0 +1,66 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+#define name "COMNET."
+#define run(i, a, b) for (int i = a; i <= b; ++i)
+#define pb push_back
+
+using namespace std;
+
+struct data {
+    int u, v, c;
+    data (int x, int y, int z) : u(x), v(y), c(z) {}
+};
+
+const int N = 1e5 + 1, M = 1e6 + 1;
+typedef vector <data> dt;
+
+dt a;
+int T;
+int n, m, q;
+int par[N];
+
+int root(int a) {
+    while (a != par[a])
+        a = par[a] = par[par[a]];
+    return a;
+}
+void joint(int a, int b)
+{
+    a = root(a); b = root(b);
+    if (a == b) return ;
+    par[b] = a;
+}
+int main()
+{
+    ios_base :: sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    cin >> T;
+    while (T--) {
+        cin >> n >> m >> q;
+        a.clear();
+        int u, v, c;
+        run(i, 1, m) {
+            cin >> u >> v >> c;
+            a.pb({u, v, c});
+        }
+        int k;
+        while (q--) {
+            dt b;
+            b = a;
+            run(i, 1, n) par[i] = i;
+            cin >> k >> v;
+            while (v--) {
+                cin >> u >> c;
+                b[u - 1].c = c;
+            }
+            for (auto x : b)
+                if (x.c < b[k - 1].c)
+                joint(x.u, x.v);
+            u = root(b[k - 1].u);
+            v = root(b[k - 1].v);
+            cout << (u == v ? "YES" : "NO") << '\n';
+        }
+    }
+}
